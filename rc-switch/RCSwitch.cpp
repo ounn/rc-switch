@@ -73,10 +73,10 @@ static const RCSwitch::Protocol proto[] = {
 #else
 static const RCSwitch::Protocol PROGMEM proto[] = {
 #endif
-  { 350, {  1, 31 }, {  1,  3 }, {  3,  1 }, false },    // protocol 1
+   { 100, { 30, 71 }, {  4, 11 }, {  9,  6 }, false },    // protocol 3
+{ 350, {  1, 31 }, {  1,  3 }, {  3,  1 }, false },    // protocol 1
   { 650, {  1, 10 }, {  1,  2 }, {  2,  1 }, false },    // protocol 2
-  { 100, { 30, 71 }, {  4, 11 }, {  9,  6 }, false },    // protocol 3
-  { 380, {  1,  6 }, {  1,  3 }, {  3,  1 }, false },    // protocol 4
+   { 380, {  1,  6 }, {  1,  3 }, {  3,  1 }, false },    // protocol 4
   { 500, {  6, 14 }, {  1,  2 }, {  2,  1 }, false },    // protocol 5
   { 365, { 13,  6 }, {  1,  2 }, {  2,  1 }, false },    // -----------
   { 605, { 1, 28  }, { 1, 2   }, { 1, 1   }, false }     // protocol 7 (EMW100R e.g. Everflourish \ COTECH \ CO/TECH \ SMJ)
@@ -87,7 +87,8 @@ enum {
 };
 
 #if not defined( RCSwitchDisableReceiving )
-unsigned long long RCSwitch::nReceivedValue = 0;
+// 将存储接收到的数据的变量类型改为 unsigned long long 并添加 volatile 关键字
+volatile unsigned long long RCSwitch::nReceivedValue = 0;
 unsigned int RCSwitch::nReceivedBitlength = 0;
 unsigned int RCSwitch::nReceivedDelay = 0;
 unsigned int RCSwitch::nReceivedProtocol = 0;
@@ -441,21 +442,21 @@ char* RCSwitch::getCodeWordD(char sGroup, int nDevice, bool bStatus) {
  */
 void RCSwitch::sendTriState(const char* sCodeWord) {
   // turn the tristate code word into the corresponding bit pattern, then send it
-  unsigned long code = 0;
+  unsigned long long code = 0; // 修改为 unsigned long long 类型
   unsigned int length = 0;
   for (const char* p = sCodeWord; *p; p++) {
-    code <<= 2L;
+    code <<= 2LL;
     switch (*p) {
       case '0':
         // bit pattern 00
         break;
       case 'F':
         // bit pattern 01
-        code |= 1L;
+        code |= 1LL;
         break;
       case '1':
         // bit pattern 11
-        code |= 3L;
+        code |= 3LL;
         break;
     }
     length += 2;
@@ -468,12 +469,12 @@ void RCSwitch::sendTriState(const char* sCodeWord) {
  */
 void RCSwitch::send(const char* sCodeWord) {
   // turn the tristate code word into the corresponding bit pattern, then send it
-  unsigned long code = 0;
+  unsigned long long code = 0; // 修改为 unsigned long long 类型
   unsigned int length = 0;
   for (const char* p = sCodeWord; *p; p++) {
-    code <<= 1L;
+    code <<= 1LL;
     if (*p != '0')
-      code |= 1L;
+      code |= 1LL;
     length++;
   }
   this->send(code, length);
@@ -498,7 +499,7 @@ void RCSwitch::send(unsigned long long code, unsigned int length) {
 
   for (int nRepeat = 0; nRepeat < nRepeatTransmit; nRepeat++) {
     for (int i = length-1; i >= 0; i--) {
-      if (code & (1L << i))
+      if (code & (1LL << i))
         this->transmit(protocol.one);
       else
         this->transmit(protocol.zero);
@@ -603,7 +604,7 @@ bool RECEIVE_ATTR RCSwitch::receiveProtocol(const int p, unsigned int changeCoun
     memcpy_P(&pro, &proto[p-1], sizeof(Protocol));
 #endif
 
-    unsigned long long code = 0;
+    unsigned long long code = 0; // 修改为 unsigned long long 类型
     //Assuming the longer pulse length is the pulse captured in timings[0]
     const unsigned int syncLengthInPulses =  ((pro.syncFactor.low) > (pro.syncFactor.high)) ? (pro.syncFactor.low) : (pro.syncFactor.high);
     const unsigned int delay = RCSwitch::timings[0] / syncLengthInPulses;
@@ -695,4 +696,4 @@ void RECEIVE_ATTR RCSwitch::handleInterrupt() {
   RCSwitch::timings[changeCount++] = duration;
   lastTime = time;  
 }
-#endif
+#endif    
