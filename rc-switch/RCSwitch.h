@@ -139,7 +139,7 @@ class RCSwitch {
 
     #if not defined( RCSwitchDisableReceiving )
     static int nReceiveTolerance;
-    static unsigned long long nReceivedValue;
+    volatile static unsigned long long nReceivedValue;
     static unsigned int nReceivedBitlength;
     static unsigned int nReceivedDelay;
     static unsigned int nReceivedProtocol;
