@@ -78,7 +78,7 @@ static const RCSwitch::Protocol PROGMEM proto[] = {
   { 100, { 30, 71 }, {  4, 11 }, {  9,  6 }, false },    // protocol 3
   { 380, {  1,  6 }, {  1,  3 }, {  3,  1 }, false },    // protocol 4
   { 500, {  6, 14 }, {  1,  2 }, {  2,  1 }, false },    // protocol 5
-  { 450, { 23,  1 }, {  1,  2 }, {  2,  1 }, true  },    // protocol 6 (HT6P20B)
+  { 365, { 13,  6 }, {  1,  2 }, {  2,  1 }, false },    // -----------
   { 605, { 1, 28  }, { 1, 2   }, { 1, 1   }, false }     // protocol 7 (EMW100R e.g. Everflourish \ COTECH \ CO/TECH \ SMJ)
 };
 
